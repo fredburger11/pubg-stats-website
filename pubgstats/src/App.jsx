@@ -1,59 +1,41 @@
-import { useState } from "react";
-import axios from "axios";
-import "./App.css";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import HomePage from './pages/HomePage'; // Correct import for HomePage
+import TournamentPage from './pages/TournamentPage'; // Correct import for TournamentPage
+import SearchPage from './pages/SearchPage';
 
 function App() {
-  const [nickname, setNickname] = useState(""); // User input
-  const [stats, setStats] = useState(null); // Player stats
-  const [error, setError] = useState(""); // Error handling
-
-  const fetchPlayerStats = async () => {
-    setError(""); // Clear previous errors
-    setStats(null); // Clear previous stats
-
-    try {
-      const response = await axios.get(`http://localhost:8080/api/player/${nickname}/stats`);
-      setStats(response.data.aggregatedStats); // Set the fetched stats
-    } catch (err) {
-      console.error("Error fetching player stats:", err.message);
-      setError("Failed to fetch player stats. Please check the nickname and try again.");
-    }
-  };
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>PUBG Player Stats</h1>
-        <p>Enter your PUBG nickname to view aggregated stats.</p>
+    <Router>
+      <div className="flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="bg-gray-800 text-white py-12 px-6 flex items-center justify-between">
+          {/* Home button */}
+          <Link to="/">
+            <img src="/icetracker.png" alt="Home" className="h-20 w-auto cursor-pointer" />
+          </Link>
+          <nav>
+          <Link to="/search" className="text-lg font-semibold text-white hover:text-blue-400">
+            Search Players
+          </Link>
+          </nav>
+        </header>
 
-        {/* Input field for nickname */}
-        <div>
-          <input
-            type="text"
-            placeholder="Enter PUBG Nickname"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-          />
-          <button onClick={fetchPlayerStats}>Get Stats</button>
-        </div>
+        {/* Main content */}
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/tournament/:id" element={<TournamentPage />} />
+            <Route path="/search" element={<SearchPage />} />
+          </Routes>
+        </main>
 
-        {/* Error message */}
-        {error && <p className="error">{error}</p>}
-
-        {/* Display stats if available */}
-        {stats && (
-          <div className="stats">
-            <h2>Stats for {nickname}</h2>
-            <ul>
-              <li><strong>Kills:</strong> {stats.kills}</li>
-              <li><strong>Damage Dealt:</strong> {stats.damageDealt}</li>
-              <li><strong>Time Survived:</strong> {stats.timeSurvived} seconds</li>
-              <li><strong>Swimming Distance:</strong> {stats.swimmingDistance} meters</li>
-            </ul>
-          </div>
-        )}
-      </header>
-    </div>
+        {/* Footer */}
+        <footer className="bg-gray-800 text-white text-center py-4 mt-auto">
+          <p>© 2024 PUBG Tournaments. All rights reserved.</p>
+        </footer>
+      </div>
+    </Router>
   );
 }
 
